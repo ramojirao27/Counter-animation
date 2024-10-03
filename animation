@@ -1,0 +1,65 @@
+Got it! If you want to animate only a number and start counting when it's in view (without animating the sections themselves), here's the updated solution. We'll keep the sections static and have the number animate (count from 0 to 100) only when it comes into view.
+
+### Updated Code:
+
+```jsx
+import { useRef, useEffect } from "react";
+import { useInView } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import "./styles.css";
+
+export default function App() {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (isInView) {
+      const animation = animate(count, 100, { duration: 2 });
+      return animation.stop; // Cleanup the animation on unmount
+    }
+  }, [isInView, count]);
+
+  return (
+    <div>
+      <div style={{ padding: "50px" }}>
+        Scroll down to see the number counting animation.
+      </div>
+      
+      <motion.div
+        ref={ref}
+        style={{
+          fontSize: "48px",
+          fontWeight: "bold",
+          color: "#007BFF",
+          textAlign: "center",
+        }}
+      >
+        {rounded}
+      </motion.div>
+      
+      <div style={{ padding: "200px" }}>
+        Scroll further for more content.
+      </div>
+    </div>
+  );
+}
+```
+
+### Key Changes:
+1. **`useInView` for Number Animation**:
+   - I've added `useInView` to track when the number element comes into view, and when it does, it starts the animation (counting from 0 to 100).
+
+2. **No Animation on Sections**:
+   - The section elements no longer animate, only the number will animate when it comes into view.
+
+3. **Number Animation Logic**:
+   - The number (`count`) animates from `0` to `100` using `animate(count, 100, { duration: 2 })` when the element is in view.
+
+### Explanation:
+- When you scroll down and the number element comes into view, the number will count from 0 to 100 over 2 seconds.
+- The rest of the page remains static, and only the number animation is triggered when the component is visible.
+
+Let me know if this solution works!
